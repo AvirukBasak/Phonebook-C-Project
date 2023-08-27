@@ -7,3 +7,14 @@ Phonebook is a simple project built in C where you can save the Infos of a perso
 
 ### 02. Main Page
 ![Main](/snaps/main.JPG)
+
+## Build
+On Windows
+```
+gcc -o infobook.exe infobook.c
+```
+
+On Unix, `libncurses` should be installed.
+```
+gcc -o infobook infobook.c -lncurses
+```
