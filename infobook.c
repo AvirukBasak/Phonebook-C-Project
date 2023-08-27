@@ -237,8 +237,7 @@ void modifyfun(){
 	clscr();
 	while(fscanf(fptr,"%s %s %s %s %lf\n",name,address,gender,gmail,&phone)!=EOF){
 		res=strcmp(name,name1);
-		if(res==0)
-		{
+		if(res==0){
 			f=1;
 			gotoxy(31,4);
 			printf("\xB3\xDB\xDB\xDB\xDB\xDB\xDB\xDB\xDB MODIFY SECTION OPENED \xDB\xDB\xDB\xDB\xDB\xDB\xDB\xDB\xB3");
@@ -296,11 +295,9 @@ void deletefun(){
 	clscr();
 	while(fscanf(fptr,"%s %s %s %s %lf\n",name,address,gender,gmail,&phone)!=EOF){
 		res=strcmp(name,name1);
-		if(res==0)
-		{
+		if(res==0){
 			f=1;
 			printf("Record deleted successfully");
-			
 		}else{
 			fprintf(fptr1,"%s %s %s %s %.0lf\n",name,address,gender,gmail,phone);
 		}
