@@ -1,8 +1,19 @@
 #include <stdio.h>
-#include <conio.h>
-#include <windows.h>
-#include <dos.h>
+#include <stdlib.h>
 #include <string.h>
+
+#ifdef _WIN32
+#include <windows.h>
+#include <conio.h>
+#include <dos.h>
+
+#else
+#include <unistd.h>
+#include <termios.h>
+#include <ncurses.h>
+
+#endif
+
 void menu(void);
 void password(void);
 void namefun(void);
@@ -11,21 +22,72 @@ void listfun(void);
 void modifyfun(void);
 void deletefun(void);
 void exitfun(void);
-void gotoxy(int x,int y){
-	COORD c;
-	c.X=x;
-	c.Y=y;
-	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE),c);
+
+void gotoxy(float x, float y){
+#ifdef _WIN32
+	COORD coord;
+	coord.X = x;
+	coord.Y = y;
+	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
+#else
+	move(y, x);
+#endif
+}
+
+void clscr(){
+#ifdef _WIN32
+	clscr();
+#else
+	clear();
+	refresh();
+#endif
+}
+
+void sleep_ms(int ms){
+#ifdef _WIN32
+	Sleep(ms);
+#else
+	usleep(ms * 1000);
+#endif
+}
+
+char getch_mod(){
+#ifdef _WIN32
+	return (char) getch();
+}
+#else
+	struct termios oldt, newt;
+	int ch;
+	tcgetattr(STDIN_FILENO, &oldt);
+	newt = oldt;
+	newt.c_lflag &= ~(ICANON | ECHO);
+	tcsetattr(STDIN_FILENO, TCSANOW, &newt);
+	ch = getchar();
+	tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
+	return (char) ch;
+#endif
 }
 
 int main(){
+#ifndef _WIN32
+	initscr();
+	start_color();
+	// set text color to blue
+	printf("\033[34;47m");
+#else
 	system("color B");
+#endif
 	password();
-	getch();	
+	getch_mod();
+#ifndef _WIN32
+	// reset text color to white
+	printf("\033[0m");
+	endwin();
+#endif
 }
 
 void namefun(){
-	system("cls");
+	clscr();
 	gotoxy(31,4);
 	printf("\xB3\xDB\xDB\xDB\xDB\xDB\xDB\xDB\xDB NEW SECTION \xDB\xDB\xDB\xDB\xDB\xDB\xDB\xDB\xB3");
 	FILE *fptr;
@@ -62,13 +124,13 @@ void namefun(){
 		fprintf(fptr,"%s %s %s %s %.0lf\n",name,address,gender,gmail,phone);
 	}
 	fclose(fptr);
-	system("cls");
+	clscr();
 	char ch;
 	gotoxy(31,4);
 	printf("Do you wanna add more datas.Press y for that:");
-	Sleep(1000);
+	sleep_ms(1000);
 	fflush(stdin);
-	while((ch=getch())=='y'){
+	while((ch=getch_mod())=='y'){
 		menu();
 	}
 }
@@ -83,7 +145,7 @@ void searchfun(){
 	double phone;
 	char gender[8];
 	char name1[100];
-	system("cls");
+	clscr();
 	fflush(stdin);
 	gotoxy(18,2);
 	printf("\xDB\xDB\xDB Enter the name of the person you want to see the detail:: ");
@@ -110,22 +172,22 @@ void searchfun(){
 			gotoxy(31,11);
 			printf("----------------------------------------");
 			flag=1;
-			Sleep(1000);
+			sleep_ms(1000);
 			gotoxy(18,12);
 			printf("Enter y for menu option.");
-			while(getch()=='y'){
+			while(getch_mod()=='y'){
 				menu();
 			}
 		}
 	}
 	if(flag==0){
-		system("cls");
+		clscr();
 		gotoxy(39,4);
 		printf("No record found.");;
 		gotoxy(39,6);
 		printf("Enter a to enter file again or double y key to open menu section:");
-		if(getch()=='a'){
-			system("cls");
+		if(getch_mod()=='a'){
+			clscr();
 			searchfun();
 		}
 	}
@@ -138,7 +200,7 @@ void listfun(){
 	double phone;
 	int f;
 	fptr=fopen("ebraj.txt","r");
-	system("cls");
+	clscr();
 	gotoxy(31,2);
 	printf("\xB3\xDB\xDB\xDB\xDB\xDB\xDB\xDB\xDB LIST SECTION OPENED \xDB\xDB\xDB\xDB\xDB\xDB\xDB\xDB\xB3");
 	printf("\n");
@@ -153,9 +215,9 @@ void listfun(){
 		printf("------------------------------------------");
 		printf("\n\n");
 	}
-	Sleep(1000);
+	sleep_ms(1000);
 	printf("Enter y for menu section:");
-	while(getch()=='y'){
+	while(getch_mod()=='y'){
 		menu();
 	}
 	fclose(fptr);
@@ -168,11 +230,11 @@ void modifyfun(){
 	double phone,phone1;
 	fptr=fopen("ebraj.txt","r");
 	fptr1=fopen("temp.txt","a");
-	system("cls");
+	clscr();
 	gotoxy(31,4);
 	printf("Enter the name: ");
 	gets(name1);
-	system("cls");
+	clscr();
 	while(fscanf(fptr,"%s %s %s %s %lf\n",name,address,gender,gmail,&phone)!=EOF){
 		res=strcmp(name,name1);
 		if(res==0)
@@ -215,7 +277,7 @@ void modifyfun(){
 	fclose(fptr1);
 	printf("\n\nPress y for menu option.");
 	fflush(stdin);
-	if(getch()=='y'){
+	if(getch_mod()=='y'){
 		menu();
 	}
 }
@@ -227,11 +289,11 @@ void deletefun(){
 	double phone,phone1;
 	fptr=fopen("ebraj.txt","r");
 	fptr1=fopen("temp.txt","a");
-	system("cls");
+	clscr();
 	gotoxy(31,4);
 	printf("Enter the CONTACT name that you want to delete: ");
 	gets(name1);
-	system("cls");
+	clscr();
 	while(fscanf(fptr,"%s %s %s %s %lf\n",name,address,gender,gmail,&phone)!=EOF){
 		res=strcmp(name,name1);
 		if(res==0)
@@ -261,13 +323,13 @@ void deletefun(){
 	fclose(fptr1);
 	printf("\n\nPress y for menu option.");
 	fflush(stdin);
-	if(getch()=='y'){
+	if(getch_mod()=='y'){
 		menu();
 	}
 }
 
 void exitfun(){
-	system("cls");
+	clscr();
 	gotoxy(31,4);
 	printf("\xDB\xDB\xDB\xDB TEAM MEMBERS \xDB\xDB\xDB\xDB");
 	gotoxy(31,6);
@@ -288,15 +350,15 @@ void password(void){
 	char name[40]="Authorized Person Only";
 	z=strlen(name);
 	for(j=0;j<=16;j++){
-		Sleep(50);
+		sleep_ms(50);
 		printf("\xDB");
 	}
 	for(j=0;j<=z;j++){
-		Sleep(60);
+		sleep_ms(60);
 		printf(" %c",name[j]);
 	}
 	for(j=0;j<=16;j++){
-		Sleep(50);
+		sleep_ms(50);
 		printf("\xDB");
 	}
 	gotoxy(30,4);
@@ -305,7 +367,7 @@ void password(void){
 	char w='*';
 	int i=0;
 	while(ch!=13){
-		ch=getch();
+		ch=getch_mod();
 		if(ch!=13 && ch!=8){
 			printf("%c",w);
 			pass[i]=ch;
@@ -316,20 +378,20 @@ void password(void){
 	if(strcmp(pass,passwords)==0){
 		gotoxy(30,6);
 		printf("CORRECT PASSWORD.");
-		Sleep(1000);
+		sleep_ms(1000);
 		menu();
 	}
 	else{
 		gotoxy(30,6);
 		printf("You entered the wrong password.");
-		Sleep(700);
-		system("cls");
+		sleep_ms(700);
+		clscr();
 		password();
 	}
 }
 
 void menu(){
-	system("cls");
+	clscr();
 	gotoxy(30,1);
 	printf("\xB3\xB2\xB2\xB2\xB2\xB2\xB2\xB2\xB2\xB2\xB2\xB2\xB2\xB2\xB2\xB2\xB2\xB2\xB2\xB2\xB2\xB2 PHONEBOOK DIRECTORY \xB2\xB2\xB2\xB2\xB2\xB2\xB2\xB2\xB2\xB2\xB2\xB2\xB2\xB2\xB2\xB2\xB2\xB2\xB2\xB2\xB2\xB3");
 	gotoxy(31,4);
@@ -344,7 +406,7 @@ void menu(){
 	printf("\xB3\xDB\xDB\xDB\xDB\xDB\xDB\xDB\xDB 5.Delete");
 	gotoxy(31,19);
 	printf("\xB3\xDB\xDB\xDB\xDB\xDB\xDB\xDB\xDB 6.Exit");
-	switch(getch()){
+	switch(getch_mod()){
 		case '1':
 			namefun();
 			break;
@@ -364,8 +426,8 @@ void menu(){
 			exitfun();
 			break;
 		default:
-			system("cls");
+			clscr();
 			printf("Invalid Enter.");
-			getch();
+			getch_mod();
 	}
 }
