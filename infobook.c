@@ -36,7 +36,7 @@ void gotoxy(float x, float y){
 
 void clscr(){
 #ifdef _WIN32
-	clscr();
+	system("cls");
 #else
 	clear();
 	refresh();
