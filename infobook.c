@@ -54,7 +54,6 @@ void sleep_ms(int ms){
 char getch_mod(){
 #ifdef _WIN32
 	return (char) getch();
-}
 #else
 	struct termios oldt, newt;
 	int ch;
@@ -75,6 +74,7 @@ int main(){
 	// set text color to blue
 	printf("\033[34;47m");
 #else
+	clscr();
 	system("color B");
 #endif
 	password();
@@ -127,7 +127,7 @@ void namefun(){
 	clscr();
 	char ch;
 	gotoxy(31,4);
-	printf("Do you wanna add more datas.Press y for that:");
+	printf("Do you wanna add more datas. Press y for that: ");
 	sleep_ms(1000);
 	fflush(stdin);
 	while((ch=getch_mod())=='y'){
@@ -148,7 +148,7 @@ void searchfun(){
 	clscr();
 	fflush(stdin);
 	gotoxy(18,2);
-	printf("\xDB\xDB\xDB Enter the name of the person you want to see the detail:: ");
+	printf("\xDB\xDB\xDB Enter the name of the person you want to see the detail: ");
 	gets(name1);
 	fptr=fopen("ebraj.txt","r");
 	//fflush(stdin);
@@ -185,7 +185,7 @@ void searchfun(){
 		gotoxy(39,4);
 		printf("No record found.");;
 		gotoxy(39,6);
-		printf("Enter a to enter file again or double y key to open menu section:");
+		printf("Enter a to enter file again or double y key to open menu section: ");
 		if(getch_mod()=='a'){
 			clscr();
 			searchfun();
@@ -206,17 +206,17 @@ void listfun(){
 	printf("\n");
 	while(fscanf(fptr,"%s %s %s %s %lf",name,address,gender,gmail,&phone)!=EOF){
 		printf("------------------------------------------\n");
-		printf("Name:%s\n",name);
-		printf("Address:%s\n",address);
-		printf("Gender:%s\n",gender);
-		printf("Gmail:%s\n",gmail);
-		printf("Phone:%.0lf\n",phone);
+		printf("Name:    %s\n",name);
+		printf("Address: %s\n",address);
+		printf("Gender:  %s\n",gender);
+		printf("Gmail:   %s\n",gmail);
+		printf("Phone:   %.0lf\n",phone);
 		f=1;
 		printf("------------------------------------------");
 		printf("\n\n");
 	}
 	sleep_ms(1000);
-	printf("Enter y for menu section:");
+	printf("Enter y for menu section: ");
 	while(getch_mod()=='y'){
 		menu();
 	}
@@ -242,16 +242,16 @@ void modifyfun(){
 			gotoxy(31,4);
 			printf("\xB3\xDB\xDB\xDB\xDB\xDB\xDB\xDB\xDB MODIFY SECTION OPENED \xDB\xDB\xDB\xDB\xDB\xDB\xDB\xDB\xB3");
 			gotoxy(31,6);
-			printf("Enter the new address:");
+			printf("Enter the new address: ");
 			scanf("%s",address1);
 			gotoxy(31,7);
-			printf("Enter the gender:");
+			printf("Enter the gender: ");
 			scanf("%s",gender1);
 			gotoxy(31,8);
-			printf("Enter the new gmail:");
+			printf("Enter the new gmail: ");
 			scanf("%s",gmail1);
 			gotoxy(31,9);
-			printf("Enter the new phone number:");
+			printf("Enter the new phone number: ");
 			scanf("%lf",&phone1);
 			fprintf(fptr1,"%s %s %s %s %.0lf\n",name,address1,gender1,gmail1,phone1);
 		}else{
@@ -359,7 +359,7 @@ void password(void){
 		printf("\xDB");
 	}
 	gotoxy(30,4);
-	printf("Password:");
+	printf("Password: ");
 	char ch,pass[20];
 	char w='*';
 	int i=0;
@@ -392,17 +392,17 @@ void menu(){
 	gotoxy(30,1);
 	printf("\xB3\xB2\xB2\xB2\xB2\xB2\xB2\xB2\xB2\xB2\xB2\xB2\xB2\xB2\xB2\xB2\xB2\xB2\xB2\xB2\xB2\xB2 PHONEBOOK DIRECTORY \xB2\xB2\xB2\xB2\xB2\xB2\xB2\xB2\xB2\xB2\xB2\xB2\xB2\xB2\xB2\xB2\xB2\xB2\xB2\xB2\xB2\xB3");
 	gotoxy(31,4);
-	printf("\xB3\xDB\xDB\xDB\xDB\xDB\xDB\xDB\xDB 1.Add New");
+	printf("\xB3\xDB\xDB\xDB\xDB\xDB\xDB\xDB\xDB 1. Add New");
 	gotoxy(31,7);
-	printf("\xB3\xDB\xDB\xDB\xDB\xDB\xDB\xDB\xDB 2.Search");
+	printf("\xB3\xDB\xDB\xDB\xDB\xDB\xDB\xDB\xDB 2. Search");
 	gotoxy(31,10);
-	printf("\xB3\xDB\xDB\xDB\xDB\xDB\xDB\xDB\xDB 3.List");
+	printf("\xB3\xDB\xDB\xDB\xDB\xDB\xDB\xDB\xDB 3. List");
 	gotoxy(31,13);
-	printf("\xB3\xDB\xDB\xDB\xDB\xDB\xDB\xDB\xDB 4.Modify");
+	printf("\xB3\xDB\xDB\xDB\xDB\xDB\xDB\xDB\xDB 4. Modify");
 	gotoxy(31,16);
-	printf("\xB3\xDB\xDB\xDB\xDB\xDB\xDB\xDB\xDB 5.Delete");
+	printf("\xB3\xDB\xDB\xDB\xDB\xDB\xDB\xDB\xDB 5. Delete");
 	gotoxy(31,19);
-	printf("\xB3\xDB\xDB\xDB\xDB\xDB\xDB\xDB\xDB 6.Exit");
+	printf("\xB3\xDB\xDB\xDB\xDB\xDB\xDB\xDB\xDB 6. Exit");
 	switch(getch_mod()){
 		case '1':
 			namefun();
